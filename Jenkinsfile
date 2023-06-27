@@ -18,7 +18,7 @@ podTemplate(label: 'docker-build',
   ]
 ) {
     node('docker-build') {
-        def dockerHubCred = insilico_dockerhub_cred
+        def dockerHubCred = 'insilico_dockerhub_cred'
         def appImage
         
         stage('Checkout'){

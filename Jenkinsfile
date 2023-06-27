@@ -49,7 +49,7 @@ podTemplate(label: 'docker-build',
         stage('Push'){
             container('docker'){
                 script {
-                    docker.withRegistry('https://docker-registry-service.docker', dockerHubCred){
+                    docker.withRegistry('https://dev-docker.seegene.com', dockerHubCred){
                         appImage.push("${env.BUILD_NUMBER}")
                         appImage.push("latest")
                     }

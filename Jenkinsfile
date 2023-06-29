@@ -30,7 +30,7 @@ podTemplate(label: 'docker-build',
         stage('Build'){
             container('docker'){
                 script {
-                    appImage = docker.build("insilico/node-hello-world")
+                    appImage = docker.build("insilico/multitom-test")
                 }
             }
         }

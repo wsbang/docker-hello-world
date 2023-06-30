@@ -74,7 +74,7 @@ podTemplate(label: 'docker-build',
                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
                         git config --global user.email "wsbang@seegene.com"
                         git checkout main
-                        cd env/dev && kustomize edit set image arm7tdmi/node-hello-world:${BUILD_NUMBER}
+                        cd env/dev && kustomize edit set image insilico/node-hello-world:${BUILD_NUMBER}
                         git commit -a -m "updated the image tag"
                         git push
                     """)

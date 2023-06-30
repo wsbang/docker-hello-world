@@ -1,14 +1,14 @@
-podTemplate(label: 'docker-build', 
+podTemplate(label: 'docker-build',
   containers: [
     containerTemplate(
-      name: 'git',
-      image: 'alpine/git',
+      name: 'docker',
+      image: 'docker',
       command: 'cat',
       ttyEnabled: true
     ),
     containerTemplate(
-      name: 'docker',
-      image: 'docker',
+      name: 'argo',
+      image: 'argoproj/argo-cd-ci-builder:latest',
       command: 'cat',
       ttyEnabled: true
     ),
@@ -18,11 +18,11 @@ podTemplate(label: 'docker-build',
   ]
 ) {
     node('docker-build') {
-        def dockerHubCred = 'insilico_dockerhub_cred'
+        def dockerHubCred = "insilico_dockerhub_cred"
         def appImage
         
         stage('Checkout'){
-            container('git'){
+            container('argo'){
                 checkout scm
             }
         }
@@ -56,6 +56,30 @@ podTemplate(label: 'docker-build',
                 }
             }
         }
-    }
-    
+
+        stage('Deploy'){
+            container('argo'){
+                checkout([$class: 'GitSCM',
+                        branches: [[name: '*/main' ]],
+                        extensions: scm.extensions,
+                        userRemoteConfigs: [[
+                            url: 'git@github.com:wsbang/docker-hello-world-deployment.git',
+                            credentialsId: 'jenkins-ssh-private',
+                        ]]
+                ])
+                sshagent(credentials: ['jenkins-ssh-private']){
+                    sh("""
+                        #!/usr/bin/env bash
+                        set +x
+                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                        git config --global user.email "wsbang@seegene.com"
+                        git checkout main
+                        cd env/dev && kustomize edit set image arm7tdmi/node-hello-world:${BUILD_NUMBER}
+                        git commit -a -m "updated the image tag"
+                        git push
+                    """)
+                }
+            }
+        }
+    } 
 }

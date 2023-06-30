@@ -64,7 +64,7 @@ podTemplate(label: 'docker-build',
                         extensions: scm.extensions,
                         userRemoteConfigs: [[
                             url: 'git@github.com:wsbang/docker-hello-world-deployment.git',
-                            credentialsId: 'jenkins-ssh-private',
+                            credentialsId: 'dev-jenkins-ssh-private',
                         ]]
                 ])
                 sshagent(credentials: ['dev-jenkins-ssh-private']){
